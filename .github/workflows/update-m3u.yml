@@ -24,7 +24,14 @@ jobs:
 
       - name: 生成 m3u 播放列表
         shell: cmd
-        run: make_m3u.bat               # 請確認這是你倉庫裡的實際檔名
+        run: |
+          echo Running make_m3u.bat ...
+          make_m3u.bat
+          echo.
+          echo === youtube_live.m3u 內容如下 ===
+          type youtube_live.m3u
+          echo.
+          echo === 完成 ===
 
       - name: 自動提交並推送變更
         uses: stefanzweifel/git-auto-commit-action@v5
