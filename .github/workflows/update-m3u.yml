@@ -1,4 +1,4 @@
-name: Update YouTube Live M3U
+name: 更新 YouTube 直播 m3u
 
 on:
   schedule:
@@ -8,7 +8,6 @@ on:
 jobs:
   update-m3u:
     runs-on: windows-latest
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -16,19 +15,17 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           persist-credentials: false
 
-      - name: Install latest yt-dlp
+      - name: 安裝最新 yt-dlp
         uses: AnimMouse/setup-yt-dlp@v3
 
-      - name: Generate m3u playlist
+      - name: 生成 m3u 播放列表
         shell: cmd
         run: make_m3u.bat
 
-      - name: Commit and push updated m3u file
-        run: |
-          git config --global user.name "GitHub Actions"
-          git config --global user.email "actions@github.com"
-          git add youtube_live.m3u
-          git commit -m "chore: auto update youtube live m3u" || echo "No changes to commit"
-          git push
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: 提交並推送更新的 m3u 文件
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "chore: auto update youtube live m3u"
+          file_pattern: youtube_live.m3u
+          commit_user_name: github-actions[bot]
+          commit_user_email: github-actions[bot]@users.noreply.github.com
