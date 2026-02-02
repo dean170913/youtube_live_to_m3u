@@ -1,1 +1,30 @@
-11111
+name: Update YouTube Live M3U
+
+on:
+  schedule:
+    - cron: '0 */4 * * *'
+  workflow_dispatch:
+
+jobs:
+  update-m3u:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install latest yt-dlp
+        uses: AnimMouse/setup-yt-dlp@v3
+
+      - name: Generate m3u playlist
+        shell: cmd
+        run: make_m3u.bat
+
+      - name: Commit and push updated m3u file
+        run: |
+          git config --global user.name "GitHub Actions"
+          git config --global user.email "actions@github.com"
+          git add youtube_live.m3u
+          git commit -m "chore: auto update youtube live m3u" || echo "No changes to commit"
+          git push
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
