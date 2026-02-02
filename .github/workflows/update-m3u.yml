@@ -2,30 +2,36 @@ name: 更新 YouTube 直播 m3u
 
 on:
   schedule:
-    - cron: '0 */4 * * *'
-  workflow_dispatch:
+    - cron: '0 */4 * * *'     # 每 4 小時執行一次，可自行調整
+  workflow_dispatch:          # 允許手動觸發
+
+permissions:
+  contents: write             # 必須！允許 workflow 寫入倉庫
 
 jobs:
   update-m3u:
     runs-on: windows-latest
+
     steps:
-      - name: Checkout repository
+      - name: 檢出倉庫
         uses: actions/checkout@v4
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          persist-credentials: false
+          persist-credentials: true     # 保留憑證，讓 git 可以 push
 
-      - name: 安裝最新 yt-dlp
+      - name: 安裝最新 yt-dlp + ffmpeg
         uses: AnimMouse/setup-yt-dlp@v3
 
       - name: 生成 m3u 播放列表
         shell: cmd
-        run: make_m3u.bat
+        run: make_m3u.bat               # 請確認這是你倉庫裡的實際檔名
 
-      - name: 提交並推送更新的 m3u 文件
+      - name: 自動提交並推送變更
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
           commit_message: "chore: auto update youtube live m3u"
           file_pattern: youtube_live.m3u
           commit_user_name: github-actions[bot]
           commit_user_email: github-actions[bot]@users.noreply.github.com
+          skip_dirty_check: false
+          skip_fetch: false
