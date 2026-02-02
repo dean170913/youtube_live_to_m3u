@@ -1,12 +1,20 @@
+name: Update YouTube Live M3U
+
+on:
+  schedule:
+    - cron: '0 */4 * * *'
+  workflow_dispatch:
+
 jobs:
   update-m3u:
     runs-on: windows-latest
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          persist-credentials: false          # 重要！避免使用默认的受限凭证
+          persist-credentials: false
 
       - name: Install latest yt-dlp
         uses: AnimMouse/setup-yt-dlp@v3
